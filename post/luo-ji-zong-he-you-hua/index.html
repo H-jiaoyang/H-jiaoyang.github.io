@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" >
+
+<title>逻辑综合优化 | connais</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+<link rel="shortcut icon" href="https://H-jiaoyang.github.io/favicon.ico?v=1706931118458">
+<link rel="stylesheet" href="https://H-jiaoyang.github.io/styles/main.css">
+
+
+
+<link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+
+
+
+    <meta name="description" content="DC综合优化文章:
+• https://blog.csdn.net/qq_21842097/article/details/111769765
+• DC优化的常用方法 | 大卫的博客园 (david-luge.cn)
+• 综合优化策略介绍-..." />
+    <meta name="keywords" content="" />
+  </head>
+  <body>
+    <div id="app" class="main">
+
+      <div class="sidebar" :class="{ 'full-height': menuVisible }">
+  <div class="top-container" data-aos="fade-right">
+    <div class="top-header-container">
+      <a class="site-title-container" href="https://H-jiaoyang.github.io">
+        <img src="https://H-jiaoyang.github.io/images/avatar.png?v=1706931118458" class="site-logo">
+        <h1 class="site-title">connais</h1>
+      </a>
+      <div class="menu-btn" @click="menuVisible = !menuVisible">
+        <div class="line"></div>
+      </div>
+    </div>
+    <div>
+      
+        
+          <a href="/" class="site-nav">
+            首页
+          </a>
+        
+      
+        
+          <a href="/archives" class="site-nav">
+            归档
+          </a>
+        
+      
+        
+          <a href="/tags" class="site-nav">
+            标签
+          </a>
+        
+      
+        
+          <a href="/post/about" class="site-nav">
+            关于
+          </a>
+        
+      
+    </div>
+  </div>
+  <div class="bottom-container" data-aos="flip-up" data-aos-offset="0">
+    <div class="social-container">
+      
+        
+          <a class="social-link" href="https://github.com/H-jiaoyang" target="_blank">
+            <i class="fab fa-github"></i>
+          </a>
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    </div>
+    <div class="site-description">
+      温故而知新
+    </div>
+    <div class="site-footer">
+      Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a> | <a class="rss" href="https://H-jiaoyang.github.io/atom.xml" target="_blank">RSS</a>
+    </div>
+  </div>
+</div>
+
+
+      <div class="main-container">
+        <div class="content-container" data-aos="fade-up">
+          <div class="post-detail">
+            <h2 class="post-title">逻辑综合优化</h2>
+            <div class="post-date">2024-02-03</div>
+            
+            <div class="post-content" v-pre>
+              <p>DC综合优化文章:<br>
+• https://blog.csdn.net/qq_21842097/article/details/111769765<br>
+• DC优化的常用方法 | 大卫的博客园 (david-luge.cn)<br>
+• 综合优化策略介绍-Design Compiler（五）_set_boundary_optimization-CSDN博客<br>
+• 第十七课：DC优化技术_dc retime 参数-CSDN博客<br>
+• Design Compiler工具学习笔记（5）_design compiler 获取元素-CSDN博客<br>
+• 数字逻辑综合工具-DC-06——综合优化过程_compile_ultra -gate_clock-CSDN博客<br>
+• 数字逻辑综合工具实践-DC-07 ——综合优化（二）和RTL coding 和DFT-CSDN博客<br>
+对时序路径、工作环境、设计规则等约束完成之后，DC就可以进行综合、优化时序了，DC在优化过程中主要的策略将在下面进行说明。然而，当普通模式下不能进行优化的，就需要我们进行编写脚本来改进DC的优化来达到时序要求。<br>
+DC进行优化的目的是权衡timing和area约束，满足用户对功能、时序和面积的要求。<br>
+DC 的优化过程需要基于设计者对 Design 的约束，其中约束又分为两类，Design Rule Constraint（DRC）和 Optimization Constraint，其中 DRC 的优先级较高（优先保证满足 DRC）。<br>
+• Design Rule Constraint：Transition，Fanout，Capacitance；<br>
+• Optimization Constraint：Timing，Area；<br>
+<img src="https://H-jiaoyang.github.io/post-images/1706929899136.png" alt="" loading="lazy"></p>
+<p>DC优化有很多策略，包括对数据通道的优化，对状态机的优化，对布尔逻辑的优化等。<br>
+<img src="https://H-jiaoyang.github.io/post-images/1706929909639.png" alt="" loading="lazy"></p>
+<p>Compile_Ultra默认优化的三个层面：架构层优化、逻辑/GTECH网表优化、门级网表优化；目的是为了在满足时序约束的前提下使芯片面积最小，可以引入一些外部的高性能优化算法；<br>
+<img src="https://H-jiaoyang.github.io/post-images/1706929919670.png" alt="" loading="lazy"></p>
+<p>一般来说，采用关键路径重新综合(关键路径就是延时最大的路径)的方法，在第一次mapping后，会发现一些路径存在时序违规，对于这些违规的路径，DC会重新回到logic/GTECH level优化，然后再进行二次mapping，不断重复，直到完成或者实在不行就会停止；<br>
+<img src="https://H-jiaoyang.github.io/post-images/1706929931133.png" alt="" loading="lazy"></p>
+<p>一、Automatic Ungrouping and Boundary optimization<br>
+Automatic Ungrouping：<br>
+<img src="https://H-jiaoyang.github.io/post-images/1706929943791.png" alt="" loading="lazy"></p>
+<p>compile默认不打散，compile_ultra会自动将模块的设计层次结构打散，打散后只能看到top层和具体实现；<br>
+常见指令如下：compile_ultra，compile -auto_ungroup。<br>
+compile会提供两种策略，包括：delay-based auto-ungrouping， area-based auto-ungrouping。<br>
+Ungrouping 就是取消设计中的层次结构，将小模块打散直接合并到大模块中，移除了层次结构的边界，可以让 DC 工具 “放开手脚”，可以通过减少逻辑级数来改善时序，并通过逻辑资源共享来降低面积。<br>
+例如：<br>
+set compile_ultre_ungroup_dw true ;#允许打散，取消desigware层次。<br>
+也就是说，调用的一个加法器和一个乘法器，本来他们是以IP核的形式，或者说是以模块的形式进行综合的，但是设置了上面那么变量之后，综合后那个模块的界面就没有了。全部ungroup打散后，没有boundary，一般功能是不会影响的，LEC来保证。但是function层次就没有了，比如对网表做一些verification，如STA时一些重要的点可能找不到了，如果还要debug的话几乎做不下去。也就是说不打散较好。<br>
+为了使设计的结果最优化，建议将compile_ultra命令和DesignWare library一起使用。<br>
+• set_ungroup &lt;reference_or_cells&gt; false  ; #禁止cell打散<br>
+• set_app_var compile_ultra_ungroup_dw false  ；#禁止打散，使用designware层次<br>
+• compile_ultra -no autoungroup ;#全部都不打散<br>
+<img src="https://H-jiaoyang.github.io/post-images/1706929959125.png" alt="" loading="lazy"></p>
+<p>Boundary optimization边界优化:<br>
+compile_ultra中，是默认开启边界优化的，在编译时，Design Compiler会对传输常数，没有连接的引脚和补码信息进行优化，也就是说边界优化会把边界引脚一些固定的电平，固定的逻辑进行优化。但是在formility（形式验证），需要告诉formility电路结构发生了改变。这个改变存放在DC的生成文件里。这种边界优化是会影响网表结构的<br>
+<img src="https://H-jiaoyang.github.io/post-images/1706929974840.png" alt="" loading="lazy"></p>
+<p>set_boundary_optimization&lt;cells_designs&gt; false #可设置某些cell不做边界优化（该模块为公用模块/或者以后有ECO需求，可能会用到一些接口）<br>
+compile_ultra -no_boundary #批量设置不进行边界优化</p>
+<p>综合阶段利用auto-ungroup和boundary timing优化修复。大部分情况下我们是不打开这两个选项的，但是它确实能够得到一个相对较好的timing结果。如果采用auto-ungroup和boundary timing优化，design中的层次可能会被打散，不保留原来的hierarchical。cell的层次被打散后，一方面后端实现时不好分析模块的逻辑关系，另外一方面是最重要的，也是最致命的，就是万一将来要在某个地方做功能上的ECO（不幸边界被优化了），那个时候就特别郁闷了，eco难度会很大。所以对于比较成熟的模块，其实完全可以打开这两个选项的。</p>
+<p>二、High-level optimization and datapath optimization<br>
+<img src="https://H-jiaoyang.github.io/post-images/1706929996654.png" alt="" loading="lazy"><br>
+<img src="https://H-jiaoyang.github.io/post-images/1706930007271.png" alt="" loading="lazy"></p>
+<p>三、adaptive retiming and timing<br>
+adaptive retiming：<br>
+Adaptive Retiming（自适应时序调整）是 DC 工具中的一种优化技术，旨在调整电路中寄存器的位置以改善电路性能。它可以动态地适应电路中的性能需求，以达到设计目标。这对于高性能数字电路设计非常重要，尤其是在面临时序违规、时序紧迫性和电路性能优化的情况下。如果在逻辑综合过程中发现设计的流水线划分不平衡，就可以使用retiming策略，在时序路径上前后移动寄存器，以提高电路的时序性能，如果没有违例的路径，则可用来减少寄存器的数量。<br>
+retiming 策略有两种，分别是 Backward Move 和 Forward Move：<br>
+<img src="https://H-jiaoyang.github.io/post-images/1706930019284.png" alt="" loading="lazy"></p>
+<p>由上图所示，retiming可能会对面积产生影响，则如果有违例的路径，则调整寄存器的位置；如果没有违例的路径，则可以用来减少寄存器的数量。通过adaptive retiming功能，再保证局部功能不变的前提下，可以进行寄存器位置的移动、分割及合并，从而改变在局部改变关键路径时序违规；<br>
+<img src="https://H-jiaoyang.github.io/post-images/1706930033813.png" alt="" loading="lazy"></p>
+<p>DC在移动寄存器的优化中，只能对有相同约束的寄存器进行调整，如果两个寄存器约束不同，则不能一起移动。移动后的寄存器在网表中的名字通常带有一个R的前缀和一个系列号，如果想知道工具有没有进行retiming，可以在svf文件中查看有没有这种重命名的寄存器。<br>
+retiming的策略不能和compile_ultra的以下option一起使用：-incremental -top -only_design_rule<br>
+compile_ultra -retime #把时序不满足部分组合逻辑转移到有余量地方，前一级就得到很大的改善。后面的violation可以通过把时钟稍微往后挪一点来改善掉。<br>
+<img src="https://H-jiaoyang.github.io/post-images/1706930053060.png" alt="" loading="lazy"></p>
+<p>#Retiming的基本思想：这几种结构在功能和时序上是等效的</p>
+<p>如果不希望这种retiming发生在一些特定的寄存器或者design中，可以通过命令设置<br>
+<img src="https://H-jiaoyang.github.io/post-images/1706930075695.png" alt="" loading="lazy"></p>
+<p>timing：<br>
+寄存器复制：如图所示，意思就是当某个寄存器后面的fanout太多时，允许工具自动复制控制寄存器的个数，从而降低每个控制寄存器的fanout，就和前面说的负载分割及组合逻辑复制类似；<br>
+compile_ultra -timing #采用register replication的方法修复critical path时序<br>
+<img src="https://H-jiaoyang.github.io/post-images/1706930088308.png" alt="" loading="lazy"></p>
+<p>四、high-effort compile<br>
+high-effort compile能够让DC更加努力地达到所约束地目标，该措施在关键路径上进行重新综合，同时对关键路径周围地逻辑进行了restructure和remap。对时序做最好的优化，会把时序的优先级提升到超过DRC（Design Rule Check）的优先级，DRC是工艺厂商的要求，不满足DRC可能会出错。<br>
+high-effort指令有两种：<br>
+• compile ultra command：附带两个option，这两个option分别包含一些脚本，提供额外地时序和面积地优化。option为：area_high_effort_script option和timing_high_effort_script option。<br>
+• compile command：附带一个option，map_effort -high option。</p>
+<p><img src="https://H-jiaoyang.github.io/post-images/1706930106619.png" alt="" loading="lazy"><br>
+High effort对关键路径地优化包括逻辑复制（Logic Duplication）和映射为大扇入的门单元（Mapping to Wide_Fanin Gates）。<br>
+<img src="https://H-jiaoyang.github.io/post-images/1706930120384.png" alt="" loading="lazy"></p>
+<p>此外，incremental指令也可以提高电路优化的性能。如果电路在compile之后不满足约束，通过incremental也许能够达到要求的结果。incremental指令只进行门级的优化，而不是逻辑功能级，会导致大量的计算时间，但是对于将最差的负slack减为0，这是最有效的办法。<br>
+为了在使用incremental指令时，减少DC的运算时间，可以将满足时序要求的模块设置为dont_touch属性。<br>
+dont_touch noncritical_blocks<br>
+对于有很多违例逻辑模块的设计，通常incremental最有效。<br>
+compile -map_effort high -incremental_mapping</p>
+<p>五、creating group path<br>
+默认情况下，DC根据不同的时钟划分path group。但如果设计中存在复杂的时钟，复杂的时序要求或者复杂的约束，用户可以将所关心的几条关键路径划分为一个path group，指定DC专注于改组路径的优化。也可以对不同的路径组设置不同的权重，权重值从0到100。<br>
+<img src="https://H-jiaoyang.github.io/post-images/1706930136508.png" alt="" loading="lazy"><br>
+默认情况下，DC只优化关键路径，即负SLACK最差的路径，如果在关键路径附近指定一个范围，那么DC会优化指定范围内的路径。由于优化的路径越多，DC运行时间越长。一般范围设定为时钟周期的10%。<br>
+<img src="https://H-jiaoyang.github.io/post-images/1706930157510.png" alt="" loading="lazy"></p>
+<p>六、gate-level optimizations<br>
+<img src="https://H-jiaoyang.github.io/post-images/1706930173894.png" alt="" loading="lazy"><br>
+Delay optimization<br>
+在该阶段，DC 通过对关键路径进行遍历来修复 Delay 的违例。<br>
+改善电路的 delay 主要有以下的思路：<br>
+• 打散关键路径上的层次结构，并使能 boundary optimization；<br>
+• 使用 Path Group 对关键路径进行分组，并在关键路径附近指定一个范围，那么 DC 就会优化指定范围之内的所有路径；<br>
+• 在探索设计空间阶段，可以给设计的 delay 更高的优先级，探索设计能达到的最快速度（不一定满足 DRC）；<br>
+• 对于扇出较大的 net 使用 balance_buffer 命令；</p>
+<p>在 Delay optimization 阶段，有下面几种改善电路 delay 的方式：upsizing, load isolation and splitting.<br>
+“upsize” 是一种优化技术，旨在通过增大某些逻辑门的规模来提高电路性能。将电路中的某些标准逻辑门替换成面积更大的逻辑门可以增强逻辑门的驱动能力，从而获得更低的传输延迟，但它会导致面积和功耗的增加，因此使用时需要注意。<br>
+<img src="https://H-jiaoyang.github.io/post-images/1706930188921.png" alt="" loading="lazy"></p>
+<p>load isolation and splitting 旨在减小逻辑门的输出负载，来改善电路的性能指标。主要思想是将逻辑门的输出与输入负载隔离开，以减小输出驱动电流。这可以通过以下方式实现：1. 在输出端插入缓冲器，以减小输出电路的负载电容。这可以降低输出延迟，提高电路的时序性能。同时，缓冲器还可以提供更高的输出驱动能力；2. 重新组织电路逻辑，将一些逻辑元素拆分为多个阶段，以减小每个阶段的输出负载，这通常需要在逻辑层面进行重新设计。（面积换速度）<br>
+<img src="https://H-jiaoyang.github.io/post-images/1706930198966.png" alt="" loading="lazy"></p>
+<p>需要注意的是，DC 在此阶段已经开始考虑 DRC。同样条件下，会选择 DRC 代价最小的方案。</p>
+<p>Design Rule Fixing<br>
+DC 主要通过 Resize 或者插 Buffer 等方式来满足 DRC 约束；<br>
+一般不会影响时序和面积结果，但必要时会导致 optimization consrtaints 违例；</p>
+<p>Area Recovery<br>
+不会引起 DRC 和 Delay 的违例，一般只是对非关键路径进行优化，优化方式包括 Cell DownSize 和 buffer and inverter cleanup；<br>
+如果没有设置面积约束，那么优化幅度会很小；</p>
+<p>七、Pipeline/Register Retiming<br>
+Pipeline/Register Retiming: 多级流水线重新调整时序，与adaptive retiming类似，也是通过移动/合并/拆分寄存器来实现的；但不同的是，register retiming 是作用在整个纯的流水线design 模块当中的，中间不能有任何的控制部分；adaptive retiming则可以作用在非流水线设计的寄存器部分；二者可以同时并行使用；<br>
+pipeline并不是拆的越散越好。<br>
+代价：DFF的面积和初始化的延迟。<br>
+<img src="https://H-jiaoyang.github.io/post-images/1706930233683.png" alt="" loading="lazy"></p>
+<p>专门对流水线寄存器做优化的选项（必须要用Compile_Ultra）<br>
+<img src="https://H-jiaoyang.github.io/post-images/1706930254698.png" alt="" loading="lazy"><br>
+<img src="https://H-jiaoyang.github.io/post-images/1706930271423.png" alt="" loading="lazy"></p>
+<p>调整了之后，寄存器会重新命名，S#表示是流水线的第多少级<br>
+这些调整信息都会放入default.svf文件，交给后端的Formality，做形式验证。<br>
+当我们打开了register retiming后，工具就可以自动将后面的三拍作为多级流水线设计而加入到前面的复杂组合逻辑中，而不用人为修改rtl代码，这种工具自动插入的流水线位置会非常精确均匀，人工改代码是难以实现的；</p>
+<p>注意事项<br>
+<img src="https://H-jiaoyang.github.io/post-images/1706930284704.png" alt="" loading="lazy"></p>
+<p>我们一般在实际操作时，通常最后一个寄存器是作为output的，为了不影响其他模块的时序，对最后一个寄存器是不进行register retiming的，可以通过上述命令告诉工具不要动最后一个寄存器；</p>
+<p>八、verifying functional equivalence<br>
+<img src="https://H-jiaoyang.github.io/post-images/1706930294386.png" alt="" loading="lazy"></p>
+
+            </div>
+            
+            
+              <div class="next-post">
+                <div class="next">下一篇</div>
+                <a href="https://H-jiaoyang.github.io/post/dc-zong-he-jian-li-shi-jian-wei-li-xiu-gai-ji-lu/">
+                  <h3 class="post-title">
+                    DC综合建立时间违例修改记录
+                  </h3>
+                </a>
+              </div>
+            
+
+            
+
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+<script type="application/javascript">
+
+AOS.init();
+
+var app = new Vue({
+  el: '#app',
+  data: {
+    menuVisible: false,
+  },
+})
+
+</script>
+
+
+
+
+
+
+  </body>
+</html>

@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" >
+
+<title>DC综合建立时间违例修改记录 | connais</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+<link rel="shortcut icon" href="https://H-jiaoyang.github.io/favicon.ico?v=1706931118458">
+<link rel="stylesheet" href="https://H-jiaoyang.github.io/styles/main.css">
+
+
+
+<link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+
+
+
+    <meta name="description" content="1.DC的综合环境：
+CLK：500M时钟
+LIB工艺库：TSMC tcb018g3d3wc.db(WCCOM operation conditions)
+运行环境：dc_shell，采用wire load model估算delay
+时钟的..." />
+    <meta name="keywords" content="" />
+  </head>
+  <body>
+    <div id="app" class="main">
+
+      <div class="sidebar" :class="{ 'full-height': menuVisible }">
+  <div class="top-container" data-aos="fade-right">
+    <div class="top-header-container">
+      <a class="site-title-container" href="https://H-jiaoyang.github.io">
+        <img src="https://H-jiaoyang.github.io/images/avatar.png?v=1706931118458" class="site-logo">
+        <h1 class="site-title">connais</h1>
+      </a>
+      <div class="menu-btn" @click="menuVisible = !menuVisible">
+        <div class="line"></div>
+      </div>
+    </div>
+    <div>
+      
+        
+          <a href="/" class="site-nav">
+            首页
+          </a>
+        
+      
+        
+          <a href="/archives" class="site-nav">
+            归档
+          </a>
+        
+      
+        
+          <a href="/tags" class="site-nav">
+            标签
+          </a>
+        
+      
+        
+          <a href="/post/about" class="site-nav">
+            关于
+          </a>
+        
+      
+    </div>
+  </div>
+  <div class="bottom-container" data-aos="flip-up" data-aos-offset="0">
+    <div class="social-container">
+      
+        
+          <a class="social-link" href="https://github.com/H-jiaoyang" target="_blank">
+            <i class="fab fa-github"></i>
+          </a>
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    </div>
+    <div class="site-description">
+      温故而知新
+    </div>
+    <div class="site-footer">
+      Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a> | <a class="rss" href="https://H-jiaoyang.github.io/atom.xml" target="_blank">RSS</a>
+    </div>
+  </div>
+</div>
+
+
+      <div class="main-container">
+        <div class="content-container" data-aos="fade-up">
+          <div class="post-detail">
+            <h2 class="post-title">DC综合建立时间违例修改记录</h2>
+            <div class="post-date">2024-01-31</div>
+            
+            <div class="post-content" v-pre>
+              <h2 id="1dc的综合环境">1.DC的综合环境：</h2>
+<h3 id="clk500m时钟">CLK：500M时钟</h3>
+<h3 id="lib工艺库tsmc-tcb018g3d3wcdbwccom-operation-conditions">LIB工艺库：TSMC tcb018g3d3wc.db(WCCOM operation conditions)</h3>
+<h3 id="运行环境dc_shell采用wire-load-model估算delay">运行环境：dc_shell，采用wire load model估算delay</h3>
+<h3 id="时钟的约束部分">时钟的约束部分：</h3>
+<figure data-type="image" tabindex="1"><img src="https://H-jiaoyang.github.io/post-images/1706688647471.png" alt="" loading="lazy"></figure>
+<h2 id="2修改过程">2.修改过程</h2>
+<h3 id="21-最严重的违例">2.1 最严重的违例</h3>
+<figure data-type="image" tabindex="2"><img src="https://H-jiaoyang.github.io/post-images/1706688668173.png" alt="" loading="lazy"></figure>
+<h3 id="tset-up违例过大时序报告中看到该条路经上插入了过多的或门一级级的或门连接在起的组合逻辑门电路延时太大远超出时钟周期数倍此时通过优化约束带来的效果不明显重新修改rtl代码">Tset up违例过大，时序报告中看到该条路经上插入了过多的或门，一级级的或门连接在起的组合逻辑门电路延时太大，远超出时钟周期数倍，此时通过优化约束带来的效果不明显，重新修改RTL代码。</h3>
+<h3 id="对应的问题代码部分组合逻辑中使用了if-else语句判断并且if中的组合逻辑判断的复杂的关系了组合逻辑长链带来严重的delay也是为什么在gui中查看schematic中会有很多的或门">对应的问题代码部分：组合逻辑中使用了if else语句判断，并且if中的组合逻辑判断的复杂的关系了组合逻辑长链带来严重的delay，也是为什么在gui中查看schematic中会有很多的或门。	<img src="https://H-jiaoyang.github.io/post-images/1706688724711.png" alt="" loading="lazy"></h3>
+<h3 id="修改后的代码部分将if-else语句换为case避免因为if-else语句生成的电路的优先级原因导致的delay同时使用寄存器输出结果优化此处的时序通过修改后避免了过长的组合逻辑链减少了违例">修改后的代码部分：将if else语句换为case，避免因为if else语句生成的电路的优先级原因导致的delay，同时使用寄存器输出结果，优化此处的时序，通过修改后避免了过长的组合逻辑链，减少了违例。</h3>
+<figure data-type="image" tabindex="3"><img src="https://H-jiaoyang.github.io/post-images/1706688748005.png" alt="" loading="lazy"></figure>
+<h3 id="22-其他的违例">2.2 其他的违例</h3>
+<h3 id="在本次设计比较严重的违例中大多是因为在rtl编写的时候没有考虑到if-else的优先级组合逻辑的运算较为复杂导致的因为采用的是18的工艺相对来说门电路的延时会比较大之前虽然测试了一些模块能通过fpga的布局布线但是实际的工艺延时较大rtl需要考虑到更加优化的写法">在本次设计比较严重的违例中，大多是因为在RTL编写的时候，没有考虑到if else的优先级组合逻辑的运算较为复杂导致的，因为采用的是.18的工艺，相对来说门电路的延时会比较大，之前虽然测试了一些模块，能通过FPGA的布局布线，但是实际的工艺延时较大，RTL需要考虑到更加优化的写法。</h3>
+<figure data-type="image" tabindex="4"><img src="https://H-jiaoyang.github.io/post-images/1706688780569.png" alt="" loading="lazy"></figure>
+<h3 id="此处展示的代码的组合逻辑就是导致违例过大的原因组合逻辑运算复杂">此处展示的代码的组合逻辑就是导致违例过大的原因：组合逻辑运算复杂</h3>
+<figure data-type="image" tabindex="5"><img src="https://H-jiaoyang.github.io/post-images/1706688802941.png" alt="" loading="lazy"></figure>
+<h3 id="同时后续在状态机中使用了这些复杂组合逻辑产生的信号进行跳转导致状态机部分违例较大同样的通过修改约束条件影响很小于是开始修改了复杂的组合逻辑尝试着简化组合逻辑和pipeline的方法来优化时序">同时后续在状态机中使用了这些复杂组合逻辑产生的信号进行跳转，导致状态机部分违例较大，同样的通过修改约束条件影响很小，于是开始修改了复杂的组合逻辑，尝试着简化组合逻辑和pipeline的方法来优化时序。</h3>
+<figure data-type="image" tabindex="6"><img src="https://H-jiaoyang.github.io/post-images/1706688832892.png" alt="" loading="lazy"></figure>
+<h3 id="上图展示的idle_flag信号修改前是通过三条不同的判断逻辑相或得到的在时序报告中以及dc-gui中查看相应的schematic都发现是因为组合逻辑门电路的长链所导致的采取的方法是将所有的判断条件拆开各自独立的判断通过寄存器输出拆开后的判断结果再经过对应的简单编码规则来输出信号">上图展示的idle_flag信号，修改前是通过三条不同的判断逻辑相或得到的，在时序报告中以及dc gui中查看相应的schematic都发现是因为组合逻辑门电路的长链所导致的，采取的方法是将所有的判断条件拆开，各自独立的判断，通过寄存器输出拆开后的判断结果，再经过对应的简单编码规则来输出信号。</h3>
+<h3 id="还有采用assign判断的组合逻辑在判断条件里看似简单的运算xxx_cnt-26可能会有比较大的delay将括号里的组合判断通过reg输出插入寄存器优化">还有采用assign判断的组合逻辑，在判断条件里看似简单的运算（xxx_cnt == 26）可能会有比较大的delay，将括号里的组合判断通过reg输出，插入寄存器优化。</h3>
+<p><img src="https://H-jiaoyang.github.io/post-images/1706688859027.png" alt="" loading="lazy"><br>
+<img src="https://H-jiaoyang.github.io/post-images/1706688876722.png" alt="" loading="lazy"><br>
+<img src="https://H-jiaoyang.github.io/post-images/1706688884914.png" alt="" loading="lazy"></p>
+<h2 id="23-模块之间的胶合逻辑">2.3 模块之间的胶合逻辑</h2>
+<h3 id="模块之间用组合逻辑连接在两个模块之间形成较长的组合逻辑将输出都通过寄存器输出-例如下图">模块之间用组合逻辑连接，在两个模块之间形成较长的组合逻辑，将输出都通过寄存器输出。例如下图：</h3>
+<p><img src="https://H-jiaoyang.github.io/post-images/1706688908689.png" alt="" loading="lazy"><br>
+<img src="https://H-jiaoyang.github.io/post-images/1706688931939.png" alt="" loading="lazy"></p>
+<h3 id="修改组合逻辑较为臃肿的地方后时序依然还是存在违例后面采用了优化约束条件的方法降低了部分slack">修改组合逻辑较为臃肿的地方后，时序依然还是存在违例，后面采用了优化约束条件的方法降低了部分slack</h3>
+<figure data-type="image" tabindex="7"><img src="https://H-jiaoyang.github.io/post-images/1706688954752.png" alt="" loading="lazy"></figure>
+<h2 id="24-优化约束条件">2.4 优化约束条件</h2>
+<h3 id="采用-incremental指令进行门级的优化">采用 -incremental指令进行门级的优化</h3>
+<p><img src="https://H-jiaoyang.github.io/post-images/1706688980907.png" alt="" loading="lazy"><br>
+<img src="https://H-jiaoyang.github.io/post-images/1706688989118.png" alt="" loading="lazy"></p>
+<h3 id="自定义路径关键范围">自定义路径+关键范围</h3>
+<p><img src="https://H-jiaoyang.github.io/post-images/1706689001935.png" alt="" loading="lazy"><br>
+<img src="https://H-jiaoyang.github.io/post-images/1706689011509.png" alt="" loading="lazy"></p>
+<h3 id="暂未使用的方法使用dc-topo模式优化brt等指令优化">暂未使用的方法：使用DC topo模式优化，BRT等指令优化。</h3>
+
+            </div>
+            
+            
+              <div class="next-post">
+                <div class="next">下一篇</div>
+                <a href="https://H-jiaoyang.github.io/post/di-liu-zhang-i2c-xie-yi/">
+                  <h3 class="post-title">
+                    FPGA学习第六章 I2C协议
+                  </h3>
+                </a>
+              </div>
+            
+
+            
+
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+<script type="application/javascript">
+
+AOS.init();
+
+var app = new Vue({
+  el: '#app',
+  data: {
+    menuVisible: false,
+  },
+})
+
+</script>
+
+
+
+
+
+
+  </body>
+</html>
